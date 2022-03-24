@@ -1,3 +1,5 @@
+use std::env;
+
 mod fpscr {
     pub const FPSCR_NBITS: i8 = 64;
 
@@ -146,7 +148,12 @@ mod fpscr {
 }
 
 fn main() {
-    let flags = fpscr::Fpscr::new(0x8a024000);
+    let args: Vec<String> = env::args().collect();
+    let mut value = args[1].as_str();
+    if value.starts_with("0x") {
+        value = value.strip_prefix("0x").unwrap();
+    }
+    let flags = fpscr::Fpscr::new(u64::from_str_radix(value, 16).unwrap());
 
     for bit_number in 0..fpscr::FPSCR_NBITS {
         if flags.is_set(bit_number as u8) {
